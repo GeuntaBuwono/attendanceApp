@@ -2,7 +2,6 @@
 
 ## Chore
 
-- Precommit configuration (husky, pre-commit, commit-lint)
 - Pipeline (Code Testing)
 - Add Helper Package (datefns, styled-component, react-native-skeleton-placeholder, faker, recyclerlistview, jest and @testing-library/react-native)
 
