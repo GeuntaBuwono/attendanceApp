@@ -2,6 +2,10 @@
   "name": "attendance-app",
   "version": "0.0.1",
   "private": true,
+  "engines": {
+    "node": ">=16",
+    "yarn": "^1.22 <=2.*"
+  },
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
