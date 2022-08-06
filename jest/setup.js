@@ -2,6 +2,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import 'react-native-gesture-handler/jestSetup'
 
+jest.mock('@react-navigation/native', () => ({
+  useRoute: () => ({
+    params: {
+      id: '123123',
+    },
+  }),
+  useNavigation: () => ({
+    navigate: jest.fn(),
+  }),
+}))
+
 jest.mock('react-native-reanimated', () => {
   const Reanimated = require('react-native-reanimated/mock')
 
