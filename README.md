@@ -2,7 +2,6 @@
 
 ## Feature
 
-- React Native Navigation Stack Screen (Homepage, Upcoming Schedule List, and Detail Schedule)
 - Splash Screen
 - Component Homepage Screen
 - Integrate Homepage Data
