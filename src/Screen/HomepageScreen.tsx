@@ -3,6 +3,7 @@ import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Badge from 'Components/Badge/Badge'
 import Button from 'Components/Button/Button'
+import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
 import { ReactNode, useLayoutEffect } from 'react'
@@ -15,15 +16,17 @@ type NavigationLoginScreenProps = NativeStackNavigationProp<RootStackParamList, 
 const HeaderLeft = () => (
   <Image
     style={{
-      width: 35,
-      height: 35,
-      borderRadius: 35,
+      width: 32,
+      height: 32,
+      borderRadius: 32,
     }}
     source={{
       uri: 'https://reactnative.dev/img/tiny_logo.png',
     }}
   />
 )
+
+const HeaderRight = () => <Icon name="bell" size={24} />
 
 const HeroSection = () => (
   <View
@@ -98,17 +101,7 @@ const TodayScheduleSection = () => (
       </Label>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
         <View style={{ marginRight: 8 }}>
-          {/* TODO: Change to Clock Icon */}
-          <Image
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: 10,
-            }}
-            source={{
-              uri: 'https://reactnative.dev/img/tiny_logo.png',
-            }}
-          />
+          <Icon name="clock" size={12} />
         </View>
         <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
           {`${dateFormatter({
@@ -187,17 +180,7 @@ const CardSchedule = () => (
       <Label>Mediterania Garden Residence</Label>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ marginRight: 8 }}>
-          {/* TODO: Change to Clock Icon */}
-          <Image
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: 10,
-            }}
-            source={{
-              uri: 'https://reactnative.dev/img/tiny_logo.png',
-            }}
-          />
+          <Icon name="clock" size={12} />
         </View>
         <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
           {`${dateFormatter({
@@ -258,7 +241,7 @@ const HomepageScreen = () => {
     navigation.setOptions({
       headerLeft: HeaderLeft,
       // TODO change to notification icon
-      headerRight: HeaderLeft,
+      headerRight: HeaderRight,
       headerShadowVisible: false,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
