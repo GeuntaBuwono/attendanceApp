@@ -1,9 +1,5 @@
 # Attendance Application Road Map
 
-## Chore
-
-- Pipeline (Code Testing)
-
 ## Feature
 
 - React Native Navigation Stack Screen (Homepage, Upcoming Schedule List, and Detail Schedule)
