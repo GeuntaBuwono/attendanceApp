@@ -12,6 +12,6 @@ import AttendanceScheduleScreen from 'Screen/AttendanceScheduleScreen'
 describe('AttendanceScheduleScreen', () => {
   it('render AttendanceScheduleScreenScreen', async () => {
     const { getByText } = render(<AttendanceScheduleScreen />)
-    await waitFor(() => getByText('Attendance Schedule'))
+    await waitFor(() => getByText('Detail Attendance Schedule'))
   })
 })

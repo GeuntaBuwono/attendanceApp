@@ -12,6 +12,6 @@ import HomepageScreen from 'Screen/HomepageScreen'
 describe('Homepage', () => {
   it('render HomepageScreen', async () => {
     const { getByText } = render(<HomepageScreen />)
-    await waitFor(() => getByText('Homepage'))
+    await waitFor(() => getByText('Next Schedule'))
   })
 })

@@ -1,8 +1,12 @@
 import { NavigationContainer } from '@react-navigation/native'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack'
 import AttendanceScheduleScreen from 'Screen/AttendanceScheduleScreen'
 import DetailAttendanceScheduleScreen from 'Screen/DetailAttendanceScheduleScreen'
 import HomepageScreen from 'Screen/HomepageScreen'
+import Colors from 'Styles/colors'
 
 export type RootStackParamList = {
   Homepage: undefined
@@ -14,25 +18,42 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
+export const DEFAULT_HEADER_TITLE_OPTIONS_STYLE: NativeStackNavigationOptions = {
+  headerTitleAlign: 'center',
+  headerTitleStyle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+}
+
 const RootStackNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="Homepage"
         screenOptions={{
-          headerShown: false,
-          headerTintColor: '#FFF',
-          headerTitle: 'Loading',
+          ...DEFAULT_HEADER_TITLE_OPTIONS_STYLE,
+          statusBarTranslucent: true,
+          statusBarColor: Colors.yellow,
+          statusBarStyle: 'dark',
+          headerStyle: {
+            backgroundColor: Colors.yellow,
+          },
         }}
       >
-        <Stack.Group>
-          <Stack.Screen name="Homepage" component={HomepageScreen} />
-          <Stack.Screen name="AttendanceSchedule" component={AttendanceScheduleScreen} />
-          <Stack.Screen
-            name="DetailAttendanceSchedule"
-            component={DetailAttendanceScheduleScreen}
-          />
-        </Stack.Group>
+        <Stack.Screen
+          name="Homepage"
+          component={HomepageScreen}
+          options={{
+            title: 'LIVE ATTENDANCE',
+          }}
+        />
+        <Stack.Screen
+          name="AttendanceSchedule"
+          component={AttendanceScheduleScreen}
+          options={{ title: 'UPCOMING SCHEDULE' }}
+        />
+        <Stack.Screen name="DetailAttendanceSchedule" component={DetailAttendanceScheduleScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )
