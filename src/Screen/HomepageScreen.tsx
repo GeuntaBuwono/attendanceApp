@@ -240,7 +240,6 @@ const HomepageScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: HeaderLeft,
-      // TODO change to notification icon
       headerRight: HeaderRight,
       headerShadowVisible: false,
     })
