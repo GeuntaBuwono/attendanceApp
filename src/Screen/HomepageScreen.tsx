@@ -6,7 +6,7 @@ import Badge from 'Components/Badge/Badge'
 import Button from 'Components/Button/Button'
 import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
-import { mockAttendanceDataBuilder } from 'Constants/mockAttendanceData'
+import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
 import { ReactNode, useEffect, useLayoutEffect, useState } from 'react'
 import { FlatList, Image, TouchableOpacity, View } from 'react-native'
@@ -94,14 +94,11 @@ const HomepageSection = ({
 )
 
 const TodayScheduleSection = ({
-  schedule,
+  todaySchedule,
   clockInValue,
   clockOutValue,
 }: {
-  schedule: {
-    start: Date
-    end: Date
-  }
+  todaySchedule: AttendanceInterface
   clockInValue: Date | undefined
   clockOutValue: Date | undefined
 }) => (
@@ -116,21 +113,23 @@ const TodayScheduleSection = ({
   >
     <View style={{ padding: 12, backgroundColor: Colors.paleGray, borderRadius: 12 }}>
       <Label restStyle={{ fontWeight: 'bold', color: Colors.darkGrey }} numberOfLines={1}>
-        Mediterania Garden Residence
+        {todaySchedule?.store}
       </Label>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
         <View style={{ marginRight: 8 }}>
           <Icon name="clock" size={12} />
         </View>
-        <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
-          {`${dateFormatter({
-            date: schedule.start,
-            format: 'HH:mm',
-          })} - ${dateFormatter({
-            date: schedule.end,
-            format: 'HH:mm',
-          })}`}
-        </Label>
+        {todaySchedule?.schedule?.start && todaySchedule?.schedule?.end && (
+          <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
+            {`${dateFormatter({
+              date: todaySchedule?.schedule?.start,
+              format: 'HH:mm',
+            })} - ${dateFormatter({
+              date: todaySchedule?.schedule?.end,
+              format: 'HH:mm',
+            })}`}
+          </Label>
+        )}
       </View>
       <View
         style={{
@@ -298,24 +297,15 @@ const ButtonSection = ({
 const HomepageScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
 
-  const [schedule] = useState({
-    start: new Date(),
-    end: new Date(),
-  })
-
   const [clockInValue, setClockInValue] = useState<Date>()
   const [clockOutValue, setClockOutValue] = useState<Date>()
-
-  const [attendanceData, setAttendanceData] = useState<Array<AttendanceInterface>>([])
-
   const [isUserCheckedIn, setIsUserCheckedIn] = useState(false)
 
+  const { data: attendanceData, todaySchedule } = useAttendanceDataBuilder()
+
   useEffect(() => {
-    const { futureDateAttendanceList } = mockAttendanceDataBuilder()
-    if (futureDateAttendanceList) {
-      futureDateAttendanceList.shift()
-      setAttendanceData(futureDateAttendanceList)
-    }
+    attendanceData?.shift()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useLayoutEffect(() => {
@@ -331,12 +321,14 @@ const HomepageScreen = () => {
     <View style={{ flex: 1, backgroundColor: Colors.white }}>
       <HeroSection />
       <View style={{ flex: 2, marginHorizontal: 24 }}>
-        <TodayScheduleSection
-          schedule={schedule}
-          clockInValue={clockInValue}
-          clockOutValue={clockOutValue}
-        />
-        <NextScheduleSection navigation={navigation} data={attendanceData} />
+        {todaySchedule?.date && (
+          <TodayScheduleSection
+            todaySchedule={todaySchedule}
+            clockInValue={clockInValue}
+            clockOutValue={clockOutValue}
+          />
+        )}
+        <NextScheduleSection navigation={navigation} data={attendanceData ?? []} />
       </View>
       <View
         style={{

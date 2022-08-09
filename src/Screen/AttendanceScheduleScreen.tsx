@@ -4,10 +4,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Badge from 'Components/Badge/Badge'
 import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
-import { mockAttendanceDataBuilder } from 'Constants/mockAttendanceData'
 import * as dateFns from 'date-fns'
+import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect } from 'react'
 import { FlatList, SafeAreaView, TouchableOpacity, View } from 'react-native'
 import styled from 'styled-components'
 import Colors from 'Styles/colors'
@@ -28,7 +28,7 @@ interface DateItemInterface {
 }
 
 const DateItem = ({ date }: DateItemInterface) => {
-  const isSunday = dateFns.getDay(date) === 0
+  const isSunday = dateFns.getDay(new Date(date)) === 0
 
   return (
     <View style={{ alignItems: 'center', width: 35 }}>
@@ -87,7 +87,7 @@ interface CardUpcomingScheduleInterface extends DateItemInterface {
 }
 
 const CardUpcomingSchedule = ({ date, data, onPress }: CardUpcomingScheduleInterface) => {
-  const isToday = dateFns.isToday(date)
+  const isToday = dateFns.isToday(new Date(date))
 
   return (
     <TouchableOpacity style={{ flexDirection: 'row' }} onPress={onPress}>
@@ -136,14 +136,7 @@ const ScheduleGapSeparator = () => <View style={{ marginBottom: 12 }} />
 const AttendanceScheduleScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
 
-  const [attendanceData, setAttendanceData] = useState<Array<AttendanceInterface>>([])
-
-  useEffect(() => {
-    const { futureDateAttendanceList } = mockAttendanceDataBuilder()
-    if (futureDateAttendanceList) {
-      setAttendanceData(futureDateAttendanceList)
-    }
-  }, [])
+  const { data: attendanceData } = useAttendanceDataBuilder()
 
   useLayoutEffect(() => {
     navigation.setOptions({

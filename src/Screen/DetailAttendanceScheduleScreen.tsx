@@ -4,8 +4,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Badge from 'Components/Badge/Badge'
 import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
+import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
-import React, { useEffect, useLayoutEffect } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
@@ -15,24 +16,6 @@ type DetailAttendanceScheduleProps = NativeStackNavigationProp<
   RootStackParamList,
   'AttendanceSchedule'
 >
-
-const MOCK_SCHEDULE_DATA: AttendanceInterface = {
-  id: '1',
-  date: new Date(),
-  imageUri:
-    'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.benchmarkgc.com%2Fwp-content%2Fuploads%2F2015%2F10%2F1Interior_Front_Desk.jpg&f=1&nofb=1',
-  store: 'Mediterania garden residence',
-  location:
-    'Main Lobby, Apartment Mediterania Garden Residence 1 (Bougenville Terrace) Garden Residence 1 (Bougenville Terrace)',
-  schedule: {
-    start: new Date('2019-09-05T08:00:00.000Z'),
-    end: new Date('2019-09-05T17:00:00.000Z'),
-  },
-  clock: {
-    in: new Date('2019-09-05T08:00:00.000Z'),
-    out: new Date('2019-09-05T17:00:00.000Z'),
-  },
-}
 
 const DetailSection = ({ children, title }: { children: React.ReactNode; title: string }) => (
   <View style={{ marginBottom: 24 }}>
@@ -56,104 +39,118 @@ const DetailAttendanceScheduleScreen = () => {
   const route = useRoute<DetailAttendanceScheduleRouteProp>()
   const navigation = useNavigation<DetailAttendanceScheduleProps>()
 
+  const [detailAttendance, setDetailAttendance] = useState<AttendanceInterface>()
+
+  const { data: attendanceData } = useAttendanceDataBuilder()
+
   useEffect(() => {
-    // TODO Get Data base on Attendance ID from screen params
-    // eslint-disable-next-line no-console
-    console.log('route id', route.params.id)
+    const detailAttendanceData = attendanceData?.filter((data) => data.id === route.params.id)[0]
+
+    if (!detailAttendance) {
+      setDetailAttendance(detailAttendanceData)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useLayoutEffect(() => {
-    navigation.setOptions({
-      title: dateFormatter({
-        date: MOCK_SCHEDULE_DATA.schedule?.start ?? new Date(),
-        format: 'd MMMM yyyy',
-      }),
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    detailAttendance?.schedule?.start &&
+      navigation.setOptions({
+        title: dateFormatter({
+          date: detailAttendance?.schedule?.start,
+          format: 'd MMMM yyyy',
+        }),
+      })
+  }, [detailAttendance?.schedule?.start, navigation])
+
+  if (detailAttendance) {
+    return (
+      <SafeAreaView style={{ flex: 1, padding: 16, paddingTop: 20, backgroundColor: Colors.white }}>
+        <DetailSection title="Store">
+          <View style={{ flexDirection: 'row' }}>
+            <Image
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 10,
+              }}
+              source={{
+                uri: detailAttendance?.imageUri,
+              }}
+            />
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Label sizeVariant="large" restStyle={{ fontWeight: 'bold' }}>
+                {detailAttendance?.store}
+              </Label>
+              <View style={{ marginVertical: 12 }}>
+                <Label
+                  sizeVariant="small"
+                  numberOfLines={2}
+                  restStyle={{ lineHeight: 16 }}
+                  color={Colors.silver}
+                >
+                  {detailAttendance?.location}
+                </Label>
+              </View>
+              <TouchableOpacity style={{ flexDirection: 'row' }}>
+                <Badge label="View maps" color="red" variant="outline" size="small" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </DetailSection>
+        <DetailSection title="Time Schedule">
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
+            <View style={{ marginRight: 8 }}>
+              <Icon name="clock" size={24} />
+            </View>
+            <Label restStyle={{ fontWeight: 'bold' }} color={Colors.darkGrey}>
+              {`${dateFormatter({
+                date: detailAttendance?.schedule?.start ?? new Date(),
+                format: 'HH:mm',
+              })} - ${dateFormatter({
+                date: detailAttendance?.schedule?.end ?? new Date(),
+                format: 'HH:mm',
+              })}`}
+            </Label>
+          </View>
+        </DetailSection>
+        <DetailSection title="Clock In">
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
+            <View style={{ marginRight: 8 }}>
+              <Icon name="barcode" size={24} />
+            </View>
+            <Label restStyle={{ fontWeight: 'bold' }} color={Colors.darkGrey}>
+              {detailAttendance?.clock.in
+                ? dateFormatter({
+                    date: detailAttendance?.clock.in,
+                    format: 'HH:mm',
+                  })
+                : '--:--'}
+            </Label>
+          </View>
+        </DetailSection>
+        <DetailSection title="Clock Out">
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
+            <View style={{ marginRight: 8 }}>
+              <Icon name="barcode" size={24} />
+            </View>
+            <Label restStyle={{ fontWeight: 'bold' }} color={Colors.darkGrey}>
+              {detailAttendance?.clock.out
+                ? dateFormatter({
+                    date: detailAttendance?.clock.out,
+                    format: 'HH:mm',
+                  })
+                : '--:--'}
+            </Label>
+          </View>
+        </DetailSection>
+      </SafeAreaView>
+    )
+  }
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 16, paddingTop: 20, backgroundColor: Colors.white }}>
-      <DetailSection title="Store">
-        <View style={{ flexDirection: 'row' }}>
-          <Image
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 10,
-            }}
-            source={{
-              uri: MOCK_SCHEDULE_DATA.imageUri,
-            }}
-          />
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Label sizeVariant="large" restStyle={{ fontWeight: 'bold' }}>
-              {MOCK_SCHEDULE_DATA.store}
-            </Label>
-            <View style={{ marginVertical: 12 }}>
-              <Label
-                sizeVariant="small"
-                numberOfLines={2}
-                restStyle={{ lineHeight: 16 }}
-                color={Colors.silver}
-              >
-                {MOCK_SCHEDULE_DATA.location}
-              </Label>
-            </View>
-            <TouchableOpacity style={{ flexDirection: 'row' }}>
-              <Badge label="View maps" color="red" variant="outline" size="small" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </DetailSection>
-      <DetailSection title="Time Schedule">
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
-          <View style={{ marginRight: 8 }}>
-            <Icon name="clock" size={24} />
-          </View>
-          <Label restStyle={{ fontWeight: 'bold' }} color={Colors.darkGrey}>
-            {`${dateFormatter({
-              date: MOCK_SCHEDULE_DATA.schedule?.start ?? new Date(),
-              format: 'HH:mm',
-            })} - ${dateFormatter({
-              date: MOCK_SCHEDULE_DATA.schedule?.end ?? new Date(),
-              format: 'HH:mm',
-            })}`}
-          </Label>
-        </View>
-      </DetailSection>
-      <DetailSection title="Clock In">
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
-          <View style={{ marginRight: 8 }}>
-            <Icon name="barcode" size={24} />
-          </View>
-          <Label restStyle={{ fontWeight: 'bold' }} color={Colors.darkGrey}>
-            {MOCK_SCHEDULE_DATA.clock.in
-              ? dateFormatter({
-                  date: MOCK_SCHEDULE_DATA.clock.in,
-                  format: 'HH:mm',
-                })
-              : ''}
-          </Label>
-        </View>
-      </DetailSection>
-      <DetailSection title="Clock Out">
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
-          <View style={{ marginRight: 8 }}>
-            <Icon name="barcode" size={24} />
-          </View>
-          <Label restStyle={{ fontWeight: 'bold' }} color={Colors.darkGrey}>
-            {MOCK_SCHEDULE_DATA.clock.out
-              ? dateFormatter({
-                  date: MOCK_SCHEDULE_DATA.clock.out,
-                  format: 'HH:mm',
-                })
-              : ''}
-          </Label>
-        </View>
-      </DetailSection>
-    </SafeAreaView>
+    <View>
+      <Label>No Schedule</Label>
+    </View>
   )
 }
 
