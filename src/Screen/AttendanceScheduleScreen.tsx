@@ -4,9 +4,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Badge from 'Components/Badge/Badge'
 import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
+import { mockAttendanceDataBuilder } from 'Constants/mockAttendanceData'
 import * as dateFns from 'date-fns'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
-import React, { useLayoutEffect } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { FlatList, SafeAreaView, TouchableOpacity, View } from 'react-native'
 import styled from 'styled-components'
 import Colors from 'Styles/colors'
@@ -30,7 +31,7 @@ const DateItem = ({ date }: DateItemInterface) => {
   const isSunday = dateFns.getDay(date) === 0
 
   return (
-    <View style={{ alignItems: 'center' }}>
+    <View style={{ alignItems: 'center', width: 35 }}>
       <Label
         restStyle={{
           color: Colors.silver,
@@ -81,11 +82,11 @@ const ContentItemStyled = styled(View)<{ itemType: 'noSchedule' | 'hasSchedule' 
 `
 
 interface CardUpcomingScheduleInterface extends DateItemInterface {
-  location: string
+  data: AttendanceInterface
   onPress: () => void
 }
 
-const CardUpcomingSchedule = ({ date, location, onPress }: CardUpcomingScheduleInterface) => {
+const CardUpcomingSchedule = ({ date, data, onPress }: CardUpcomingScheduleInterface) => {
   const isToday = dateFns.isToday(date)
 
   return (
@@ -93,7 +94,7 @@ const CardUpcomingSchedule = ({ date, location, onPress }: CardUpcomingScheduleI
       <DateItem date={date} />
       <ContentItemStyled itemType="hasSchedule">
         <Label numberOfLines={1} restStyle={{ fontWeight: 'bold' }}>
-          {location}
+          {data.location}
         </Label>
         <View
           style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, marginTop: 12 }}
@@ -132,74 +133,17 @@ const CardNoSchedule = ({ date }: DateItemInterface) => (
 
 const ScheduleGapSeparator = () => <View style={{ marginBottom: 12 }} />
 
-const MOCK_SCHEDULE_DATA = [
-  {
-    id: 'First Item',
-    date: new Date(),
-    location: 'Mediterania Garden Residence1',
-  },
-  {
-    id: 'Second Item',
-    date: new Date(),
-    location: 'Mediterania Garden Residence2',
-    isNoSchedule: true,
-  },
-  {
-    id: 'Third Item',
-    date: new Date('2019-09-05T00:00:00.000Z'),
-    location: 'Mediterania Garden Residence3',
-  },
-  {
-    id: 'Fourth Item',
-    date: new Date('2019-09-01T00:00:00.000Z'),
-    location: 'Mediterania Garden Residence4',
-  },
-  {
-    id: 'First Item1',
-    date: new Date(),
-    location: 'Mediterania Garden Residence5',
-  },
-  {
-    id: 'Second Item1',
-    date: new Date(),
-    location: 'Mediterania Garden Residence6',
-    isNoSchedule: true,
-  },
-  {
-    id: 'Third Item1',
-    date: new Date('2019-09-08T00:00:00.000Z'),
-    location: 'Mediterania Garden Residence7',
-  },
-  {
-    id: 'Fourth Item1',
-    date: new Date('2019-09-08T00:00:00.000Z'),
-    location: 'Mediterania Garden Residence8',
-  },
-  {
-    id: 'First Item2',
-    date: new Date(),
-    location: 'Mediterania Garden Residence',
-  },
-  {
-    id: 'Second Item2',
-    date: new Date(),
-    location: 'Mediterania Garden Residence',
-    isNoSchedule: true,
-  },
-  {
-    id: 'Third Item2',
-    date: new Date('2019-09-08T00:00:00.000Z'),
-    location: 'Mediterania Garden Residence',
-  },
-  {
-    id: 'Fourth Item2',
-    date: new Date('2019-09-08T00:00:00.000Z'),
-    location: 'Mediterania Garden Residence',
-  },
-]
-
 const AttendanceScheduleScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
+
+  const [attendanceData, setAttendanceData] = useState<Array<AttendanceInterface>>([])
+
+  useEffect(() => {
+    const { futureDateAttendanceList } = mockAttendanceDataBuilder()
+    if (futureDateAttendanceList) {
+      setAttendanceData(futureDateAttendanceList)
+    }
+  }, [])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -231,21 +175,21 @@ const AttendanceScheduleScreen = () => {
           ListFooterComponent={ScheduleGapSeparator}
           ItemSeparatorComponent={ScheduleGapSeparator}
           style={{ paddingHorizontal: 16 }}
-          data={MOCK_SCHEDULE_DATA}
+          data={attendanceData}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) =>
-            item.isNoSchedule ? (
-              <CardNoSchedule date={item.date} />
-            ) : (
+            item.schedule?.start ? (
               <CardUpcomingSchedule
+                data={item}
                 date={item.date}
-                location={item.location}
                 onPress={() =>
                   navigation.push('DetailAttendanceSchedule', {
                     id: 'id__DetailAttendanceSchedule__1',
                   })
                 }
               />
+            ) : (
+              <CardNoSchedule date={item.date} />
             )
           }
         />

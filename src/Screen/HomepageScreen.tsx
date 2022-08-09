@@ -1,12 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
+import { faker } from '@faker-js/faker'
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Badge from 'Components/Badge/Badge'
 import Button from 'Components/Button/Button'
 import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
+import { mockAttendanceDataBuilder } from 'Constants/mockAttendanceData'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
-import { ReactNode, useLayoutEffect, useState } from 'react'
+import { ReactNode, useEffect, useLayoutEffect, useState } from 'react'
 import { FlatList, Image, TouchableOpacity, View } from 'react-native'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
@@ -22,7 +24,7 @@ const HeaderLeft = () => (
         borderRadius: 32,
       }}
       source={{
-        uri: 'https://reactnative.dev/img/tiny_logo.png',
+        uri: faker.image.cats(),
       }}
     />
   </TouchableOpacity>
@@ -179,51 +181,49 @@ const TodayScheduleSection = ({
   </HomepageSection>
 )
 
-const MOCK_SCHEDULE_DATA = [
-  {
-    id: 'First Item',
-  },
-  {
-    id: 'Second Item',
-  },
-  {
-    id: 'Third Item',
-  },
-]
-
-const CardSchedule = ({ onPress }: { onPress: () => void }) => (
+const CardSchedule = ({ onPress, data }: { onPress: () => void; data: AttendanceInterface }) => (
   <TouchableOpacity
     onPress={onPress}
-    style={{ flex: 1, padding: 12, backgroundColor: Colors.paleGray, borderRadius: 12 }}
+    style={{ flex: 1, padding: 12, backgroundColor: Colors.paleGray, borderRadius: 12, width: 225 }}
   >
     <View>
-      <Label restStyle={{ fontWeight: '300' }} color={Colors.silver}>
-        {dateFormatter({
-          date: new Date(),
-          format: 'iiii',
-        })}
-      </Label>
-      <Label sizeVariant="large" restStyle={{ fontWeight: 'bold' }}>
-        {dateFormatter({
-          date: new Date(),
-          format: 'd MMM',
-        })}
-      </Label>
+      {data?.schedule?.start && (
+        <Label restStyle={{ fontWeight: '300' }} color={Colors.silver}>
+          {dateFormatter({
+            date: data.schedule.start,
+            format: 'iiii',
+          })}
+        </Label>
+      )}
+      {data?.schedule?.start && (
+        <Label sizeVariant="large" restStyle={{ fontWeight: 'bold' }}>
+          {dateFormatter({
+            date: data.schedule.start,
+            format: 'd MMM',
+          })}
+        </Label>
+      )}
     </View>
     <View style={{ marginTop: 12 }}>
-      <Label numberOfLines={1}>Mediterania Garden Residence</Label>
+      <Label numberOfLines={1}>{data?.store}</Label>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ marginRight: 8 }}>
           <Icon name="clock" size={12} />
         </View>
         <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
-          {`${dateFormatter({
-            date: new Date(),
-            format: 'HH:mm',
-          })} - ${dateFormatter({
-            date: new Date(),
-            format: 'HH:mm',
-          })}`}
+          {`${
+            data?.schedule?.start &&
+            dateFormatter({
+              date: data.schedule.start,
+              format: 'HH:mm',
+            })
+          } - ${
+            data?.schedule?.end &&
+            dateFormatter({
+              date: data.schedule.end,
+              format: 'HH:mm',
+            })
+          }`}
         </Label>
       </View>
     </View>
@@ -232,7 +232,13 @@ const CardSchedule = ({ onPress }: { onPress: () => void }) => (
 
 const ScheduleGapSeparator = () => <View style={{ marginRight: 24 }} />
 
-const NextScheduleSection = ({ navigation }: { navigation: NavigationLoginScreenProps }) => (
+const NextScheduleSection = ({
+  navigation,
+  data,
+}: {
+  navigation: NavigationLoginScreenProps
+  data: Array<AttendanceInterface>
+}) => (
   <HomepageSection
     left={{
       label: 'Next Schedule',
@@ -243,10 +249,11 @@ const NextScheduleSection = ({ navigation }: { navigation: NavigationLoginScreen
     }}
   >
     <FlatList
-      data={MOCK_SCHEDULE_DATA}
+      data={data}
       horizontal
       renderItem={({ item }) => (
         <CardSchedule
+          data={item}
           onPress={() =>
             navigation.push('DetailAttendanceSchedule', {
               id: item.id,
@@ -296,7 +303,16 @@ const HomepageScreen = () => {
   const [clockInValue, setClockInValue] = useState<Date>()
   const [clockOutValue, setClockOutValue] = useState<Date>()
 
+  const [attendanceData, setAttendanceData] = useState<Array<AttendanceInterface>>([])
+
   const [isUserCheckedIn, setIsUserCheckedIn] = useState(false)
+
+  useEffect(() => {
+    const { futureDateAttendanceList } = mockAttendanceDataBuilder()
+    if (futureDateAttendanceList) {
+      setAttendanceData(futureDateAttendanceList)
+    }
+  }, [])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -316,7 +332,7 @@ const HomepageScreen = () => {
           clockInValue={clockInValue}
           clockOutValue={clockOutValue}
         />
-        <NextScheduleSection navigation={navigation} />
+        <NextScheduleSection navigation={navigation} data={attendanceData} />
       </View>
       <View
         style={{

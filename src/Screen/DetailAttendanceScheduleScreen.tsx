@@ -16,7 +16,8 @@ type DetailAttendanceScheduleProps = NativeStackNavigationProp<
   'AttendanceSchedule'
 >
 
-const MOCK_SCHEDULE_DATA = {
+const MOCK_SCHEDULE_DATA: AttendanceInterface = {
+  id: '1',
   date: new Date(),
   imageUri:
     'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.benchmarkgc.com%2Fwp-content%2Fuploads%2F2015%2F10%2F1Interior_Front_Desk.jpg&f=1&nofb=1',
@@ -65,7 +66,7 @@ const DetailAttendanceScheduleScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: dateFormatter({
-        date: MOCK_SCHEDULE_DATA.date,
+        date: MOCK_SCHEDULE_DATA.schedule?.start ?? new Date(),
         format: 'd MMMM yyyy',
       }),
     })
@@ -113,10 +114,10 @@ const DetailAttendanceScheduleScreen = () => {
           </View>
           <Label restStyle={{ fontWeight: 'bold' }} color={Colors.darkGrey}>
             {`${dateFormatter({
-              date: MOCK_SCHEDULE_DATA.schedule.start,
+              date: MOCK_SCHEDULE_DATA.schedule?.start ?? new Date(),
               format: 'HH:mm',
             })} - ${dateFormatter({
-              date: MOCK_SCHEDULE_DATA.schedule.end,
+              date: MOCK_SCHEDULE_DATA.schedule?.end ?? new Date(),
               format: 'HH:mm',
             })}`}
           </Label>
