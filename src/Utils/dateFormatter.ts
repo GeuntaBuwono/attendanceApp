@@ -11,5 +11,5 @@ type DateFormatType =
   | 'd MMMM yyyy'
 
 export const dateFormatter = ({ date, format }: { date: Date; format: DateFormatType }) => {
-  return dateFns.format(date, format)
+  return dateFns.format(new Date(date), format)
 }
