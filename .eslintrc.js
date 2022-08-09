@@ -56,7 +56,6 @@ module.exports = {
     'better-styled-components/sort-declarations-alphabetically': 2,
     'no-shadow': 'off',
     'no-undef': 'off',
-    indent: ['error', 2],
     'linebreak-style': ['error', 'unix'],
     quotes: ['error', 'single', { avoidEscape: true, allowTemplateLiterals: false }],
     'comma-dangle': 0,
