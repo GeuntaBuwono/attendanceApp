@@ -39,6 +39,7 @@ const RootStackNavigator = () => {
           headerStyle: {
             backgroundColor: Colors.yellow,
           },
+          headerShadowVisible: false,
         }}
       >
         <Stack.Screen
