@@ -91,7 +91,18 @@ const HomepageSection = ({
   </>
 )
 
-const TodayScheduleSection = () => (
+const TodayScheduleSection = ({
+  schedule,
+  clockInValue,
+  clockOutValue,
+}: {
+  schedule: {
+    start: Date
+    end: Date
+  }
+  clockInValue: Date | undefined
+  clockOutValue: Date | undefined
+}) => (
   <HomepageSection
     left={{
       label: "Today's Schedule",
@@ -111,10 +122,10 @@ const TodayScheduleSection = () => (
         </View>
         <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
           {`${dateFormatter({
-            date: new Date(),
+            date: schedule.start,
             format: 'HH:mm',
           })} - ${dateFormatter({
-            date: new Date(),
+            date: schedule.end,
             format: 'HH:mm',
           })}`}
         </Label>
@@ -138,7 +149,14 @@ const TodayScheduleSection = () => (
           marginVertical: 4,
         }}
       >
-        <Label sizeVariant="extra-large">--:--</Label>
+        <Label sizeVariant={clockInValue ? 'large' : 'extra-large'}>
+          {clockInValue
+            ? dateFormatter({
+                date: clockInValue,
+                format: 'HH:mm',
+              })
+            : '--:--'}
+        </Label>
         <View
           style={{
             width: 150,
@@ -148,7 +166,14 @@ const TodayScheduleSection = () => (
             borderColor: Colors.silver,
           }}
         />
-        <Label sizeVariant="extra-large">--:--</Label>
+        <Label sizeVariant={clockOutValue ? 'large' : 'extra-large'}>
+          {clockOutValue
+            ? dateFormatter({
+                date: clockOutValue,
+                format: 'HH:mm',
+              })
+            : '--:--'}
+        </Label>
       </View>
     </View>
   </HomepageSection>
@@ -263,6 +288,14 @@ const ButtonSection = ({
 const HomepageScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
 
+  const [schedule] = useState({
+    start: new Date(),
+    end: new Date(),
+  })
+
+  const [clockInValue, setClockInValue] = useState<Date>()
+  const [clockOutValue, setClockOutValue] = useState<Date>()
+
   const [isUserCheckedIn, setIsUserCheckedIn] = useState(false)
 
   useLayoutEffect(() => {
@@ -278,7 +311,11 @@ const HomepageScreen = () => {
     <View style={{ flex: 1, backgroundColor: Colors.white }}>
       <HeroSection />
       <View style={{ flex: 2, marginHorizontal: 24 }}>
-        <TodayScheduleSection />
+        <TodayScheduleSection
+          schedule={schedule}
+          clockInValue={clockInValue}
+          clockOutValue={clockOutValue}
+        />
         <NextScheduleSection navigation={navigation} />
       </View>
       <View
@@ -290,8 +327,14 @@ const HomepageScreen = () => {
         <ButtonSection
           isUserCheckedIn={isUserCheckedIn}
           onPress={{
-            checkIn: () => setIsUserCheckedIn(true),
-            checkOut: () => setIsUserCheckedIn(false),
+            checkIn: () => {
+              setIsUserCheckedIn(true)
+              setClockInValue(new Date())
+            },
+            checkOut: () => {
+              setClockOutValue(new Date())
+              setIsUserCheckedIn(false)
+            },
           }}
         />
       </View>
