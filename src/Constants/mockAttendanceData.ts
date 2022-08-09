@@ -47,8 +47,8 @@ const futureDateBuilder = () => {
       schedule:
         i % 4
           ? {
-              start: dateFns.setDate(new Date(), i),
-              end: dateFns.setDate(new Date(), i),
+              start: dateFns.set(new Date(), { date: i, hours: 8, minutes: 0 }),
+              end: dateFns.set(new Date(), { date: i, hours: 17, minutes: 0 }),
             }
           : null,
     }
