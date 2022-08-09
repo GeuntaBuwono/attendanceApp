@@ -32,7 +32,7 @@ const DateItem = ({ date }: DateItemInterface) => {
   const isSunday = dateFns.getDay(new Date(date)) === 0
 
   return (
-    <View style={{ alignItems: 'center', width: 35 }}>
+    <View style={{ alignItems: 'center', width: 35 }} renderToHardwareTextureAndroid>
       <Label
         restStyle={{
           color: Colors.silver,
@@ -87,11 +87,16 @@ interface CardUpcomingScheduleInterface extends DateItemInterface {
   onPress: () => void
 }
 
+const CARD_SCHEDULE_HEIGHT = 75
+
 const CardUpcomingSchedule = ({ data, onPress }: CardUpcomingScheduleInterface) => {
   const isToday = data.schedule?.start && dateFns.isToday(new Date(data.schedule?.start))
 
   return (
-    <TouchableOpacity style={{ flexDirection: 'row' }} onPress={onPress}>
+    <TouchableOpacity
+      style={{ flexDirection: 'row', height: CARD_SCHEDULE_HEIGHT }}
+      onPress={onPress}
+    >
       <DateItem date={data.date} />
       <ContentItemStyled itemType="hasSchedule">
         <Label numberOfLines={1} restStyle={{ fontWeight: 'bold' }}>
@@ -126,9 +131,12 @@ const CardUpcomingSchedule = ({ data, onPress }: CardUpcomingScheduleInterface) 
 }
 
 const CardNoSchedule = ({ date }: DateItemInterface) => (
-  <View style={{ flexDirection: 'row' }}>
+  <View
+    style={{ flexDirection: 'row', height: CARD_SCHEDULE_HEIGHT }}
+    renderToHardwareTextureAndroid
+  >
     <DateItem date={date} />
-    <ContentItemStyled itemType="noSchedule">
+    <ContentItemStyled itemType="noSchedule" renderToHardwareTextureAndroid>
       <Label restStyle={{ fontWeight: 'bold' }}>NO SCHEDULE</Label>
     </ContentItemStyled>
   </View>
@@ -168,6 +176,14 @@ const AttendanceScheduleScreen = () => {
           </Label>
         </View>
         <FlatList
+          getItemLayout={(_data, index) => ({
+            length: CARD_SCHEDULE_HEIGHT,
+            offset: CARD_SCHEDULE_HEIGHT * index,
+            index,
+          })}
+          removeClippedSubviews
+          initialNumToRender={7}
+          maxToRenderPerBatch={7}
           ListFooterComponent={ScheduleGapSeparator}
           ItemSeparatorComponent={ScheduleGapSeparator}
           style={{ paddingHorizontal: 16 }}
@@ -178,11 +194,13 @@ const AttendanceScheduleScreen = () => {
               <CardUpcomingSchedule
                 data={item}
                 date={item.date}
-                onPress={() =>
-                  navigation.push('DetailAttendanceSchedule', {
-                    id: item.id,
+                onPress={() => {
+                  requestAnimationFrame(() => {
+                    navigation.push('DetailAttendanceSchedule', {
+                      id: item.id,
+                    })
                   })
-                }
+                }}
               />
             ) : (
               <CardNoSchedule date={item.date} />

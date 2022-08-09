@@ -82,7 +82,10 @@ const HomepageSection = ({
   }
 }) => (
   <>
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 8 }}>
+    <View
+      style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 8 }}
+      renderToHardwareTextureAndroid
+    >
       <Label restStyle={{ textTransform: 'uppercase', fontWeight: 'bold', color: Colors.darkGrey }}>
         {left.label}
       </Label>
@@ -181,11 +184,19 @@ const TodayScheduleSection = ({
   </HomepageSection>
 )
 
+const CARD_SCHEDULE_WIDTH = 225
+
 const CardSchedule = ({ onPress, data }: { onPress: () => void; data: AttendanceInterface }) => (
   <TouchableOpacity
     disabled={data.date && !data?.schedule?.start}
     onPress={data.date && data?.schedule?.start && onPress}
-    style={{ flex: 1, padding: 12, backgroundColor: Colors.paleGray, borderRadius: 12, width: 225 }}
+    style={{
+      flex: 1,
+      padding: 12,
+      backgroundColor: Colors.paleGray,
+      borderRadius: 12,
+      width: CARD_SCHEDULE_WIDTH,
+    }}
   >
     <View>
       {data?.date && (
@@ -252,16 +263,26 @@ const NextScheduleSection = ({
     }}
   >
     <FlatList
+      getItemLayout={(_data, index) => ({
+        length: CARD_SCHEDULE_WIDTH,
+        offset: CARD_SCHEDULE_WIDTH * index,
+        index,
+      })}
+      removeClippedSubviews
+      initialNumToRender={2}
+      maxToRenderPerBatch={2}
       data={data}
       horizontal
       renderItem={({ item }) => (
         <CardSchedule
           data={item}
-          onPress={() =>
-            navigation.push('DetailAttendanceSchedule', {
-              id: item.id,
+          onPress={() => {
+            requestAnimationFrame(() => {
+              navigation.push('DetailAttendanceSchedule', {
+                id: item.id,
+              })
             })
-          }
+          }}
         />
       )}
       keyExtractor={(item) => item.id}
@@ -321,7 +342,7 @@ const HomepageScreen = () => {
   return (
     <BasicScreenLayout>
       <HeroSection />
-      <View style={{ flex: 2, marginHorizontal: 24 }}>
+      <View style={{ flex: 2, marginHorizontal: 24 }} renderToHardwareTextureAndroid>
         {todaySchedule?.date && (
           <TodayScheduleSection
             todaySchedule={todaySchedule}

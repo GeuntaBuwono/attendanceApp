@@ -19,7 +19,7 @@ type DetailAttendanceScheduleProps = NativeStackNavigationProp<
 >
 
 const DetailSection = ({ children, title }: { children: React.ReactNode; title: string }) => (
-  <View style={{ marginBottom: 24 }}>
+  <View style={{ marginBottom: 24 }} renderToHardwareTextureAndroid>
     <Label restStyle={{ fontWeight: 'bold', textTransform: 'uppercase' }} sizeVariant="large">
       {title}
     </Label>
