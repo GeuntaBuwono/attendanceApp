@@ -2,7 +2,7 @@ import { dateFormatter } from 'Utils/dateFormatter'
 
 describe('Date Formatter', () => {
   const validDate = dateFormatter({
-    date: new Date('2022-12-12T10:00:00+0700'),
+    date: new Date('2022-12-12T10:00:00'),
     format: 'HH:mm',
   })
 
