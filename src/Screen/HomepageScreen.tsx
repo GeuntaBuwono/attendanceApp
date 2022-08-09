@@ -102,7 +102,7 @@ const TodayScheduleSection = () => (
     }}
   >
     <View style={{ padding: 12, backgroundColor: Colors.paleGray, borderRadius: 12 }}>
-      <Label restStyle={{ fontWeight: 'bold', color: Colors.darkGrey }}>
+      <Label restStyle={{ fontWeight: 'bold', color: Colors.darkGrey }} numberOfLines={1}>
         Mediterania Garden Residence
       </Label>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4 }}>
@@ -186,7 +186,7 @@ const CardSchedule = ({ onPress }: { onPress: () => void }) => (
       </Label>
     </View>
     <View style={{ marginTop: 12 }}>
-      <Label>Mediterania Garden Residence</Label>
+      <Label numberOfLines={1}>Mediterania Garden Residence</Label>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ marginRight: 8 }}>
           <Icon name="clock" size={12} />
