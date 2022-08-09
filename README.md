@@ -5,9 +5,7 @@
 - Splash Screen
 - Component Homepage Screen
 - Integrate Homepage Data
-- Component Upcoming Schedule Screen
 - Integrate Upcoming Schedule Screen
-- Component Detail Schedule
 - Integrate Detail Schedule
 
 ## CI/CD and Production Grade
