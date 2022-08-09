@@ -6,7 +6,7 @@ import Button from 'Components/Button/Button'
 import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
-import { ReactNode, useLayoutEffect } from 'react'
+import { ReactNode, useLayoutEffect, useState } from 'react'
 import { FlatList, Image, TouchableOpacity, View } from 'react-native'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
@@ -14,19 +14,25 @@ import { dateFormatter } from 'Utils/dateFormatter'
 type NavigationLoginScreenProps = NativeStackNavigationProp<RootStackParamList, 'Homepage'>
 
 const HeaderLeft = () => (
-  <Image
-    style={{
-      width: 32,
-      height: 32,
-      borderRadius: 32,
-    }}
-    source={{
-      uri: 'https://reactnative.dev/img/tiny_logo.png',
-    }}
-  />
+  <TouchableOpacity onPress={() => undefined}>
+    <Image
+      style={{
+        width: 32,
+        height: 32,
+        borderRadius: 32,
+      }}
+      source={{
+        uri: 'https://reactnative.dev/img/tiny_logo.png',
+      }}
+    />
+  </TouchableOpacity>
 )
 
-const HeaderRight = () => <Icon name="bell" size={24} />
+const HeaderRight = () => (
+  <TouchableOpacity onPress={() => undefined}>
+    <Icon name="bell" size={24} />
+  </TouchableOpacity>
+)
 
 const HeroSection = () => (
   <View
@@ -160,8 +166,11 @@ const MOCK_SCHEDULE_DATA = [
   },
 ]
 
-const CardSchedule = () => (
-  <View style={{ flex: 1, padding: 12, backgroundColor: Colors.paleGray, borderRadius: 12 }}>
+const CardSchedule = ({ onPress }: { onPress: () => void }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={{ flex: 1, padding: 12, backgroundColor: Colors.paleGray, borderRadius: 12 }}
+  >
     <View>
       <Label restStyle={{ fontWeight: '300' }} color={Colors.silver}>
         {dateFormatter({
@@ -193,7 +202,7 @@ const CardSchedule = () => (
         </Label>
       </View>
     </View>
-  </View>
+  </TouchableOpacity>
 )
 
 const ScheduleGapSeparator = () => <View style={{ marginRight: 24 }} />
@@ -211,14 +220,31 @@ const NextScheduleSection = ({ navigation }: { navigation: NavigationLoginScreen
     <FlatList
       data={MOCK_SCHEDULE_DATA}
       horizontal
-      renderItem={CardSchedule}
+      renderItem={({ item }) => (
+        <CardSchedule
+          onPress={() =>
+            navigation.push('DetailAttendanceSchedule', {
+              id: item.id,
+            })
+          }
+        />
+      )}
       keyExtractor={(item) => item.id}
       ItemSeparatorComponent={ScheduleGapSeparator}
     />
   </HomepageSection>
 )
 
-const ButtonSection = () => (
+const ButtonSection = ({
+  isUserCheckedIn,
+  onPress,
+}: {
+  isUserCheckedIn: boolean
+  onPress: {
+    checkIn: () => void
+    checkOut: () => void
+  }
+}) => (
   <View
     style={{
       flexDirection: 'row',
@@ -226,16 +252,18 @@ const ButtonSection = () => (
     }}
   >
     <View style={{ flex: 1, marginHorizontal: 12 }}>
-      <Button onPress={() => undefined} label="Clock In" color="topaz" />
+      <Button onPress={onPress.checkIn} label="Clock In" isDisabled={isUserCheckedIn} />
     </View>
     <View style={{ flex: 1, marginHorizontal: 12 }}>
-      <Button onPress={() => undefined} label="Clock Out" color="grey" />
+      <Button onPress={onPress.checkOut} label="Clock Out" isDisabled={!isUserCheckedIn} />
     </View>
   </View>
 )
 
 const HomepageScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
+
+  const [isUserCheckedIn, setIsUserCheckedIn] = useState(false)
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -259,7 +287,13 @@ const HomepageScreen = () => {
           marginHorizontal: 12,
         }}
       >
-        <ButtonSection />
+        <ButtonSection
+          isUserCheckedIn={isUserCheckedIn}
+          onPress={{
+            checkIn: () => setIsUserCheckedIn(true),
+            checkOut: () => setIsUserCheckedIn(false),
+          }}
+        />
       </View>
     </View>
   )

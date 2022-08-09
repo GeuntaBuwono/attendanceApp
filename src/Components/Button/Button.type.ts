@@ -1,5 +1,5 @@
 export interface ButtonStyleInterface {
-  color: 'topaz' | 'grey'
+  isDisabled?: boolean
   padding?: string
 }
 
