@@ -6,7 +6,6 @@
 - Component Homepage Screen
 - Integrate Homepage Data
 - Integrate Upcoming Schedule Screen
-- Integrate Detail Schedule
 
 ## CI/CD and Production Grade
 
