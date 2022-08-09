@@ -66,17 +66,10 @@ export const mockAttendanceDataBuilder = () => {
 
   const todayDate = futureDateAttendanceList[0]
 
-  const filteredFutureDate = () => {
-    futureDateAttendanceList.shift()
-    return {
-      futureDateAttendanceList,
-    }
-  }
-
   return {
     data: [...passDateAttendanceList, ...futureDateAttendanceList],
     passDateAttendanceList,
     todayDate,
-    futureDateAttendanceList: filteredFutureDate().futureDateAttendanceList,
+    futureDateAttendanceList,
   }
 }

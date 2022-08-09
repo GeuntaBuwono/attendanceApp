@@ -313,6 +313,7 @@ const HomepageScreen = () => {
   useEffect(() => {
     const { futureDateAttendanceList } = mockAttendanceDataBuilder()
     if (futureDateAttendanceList) {
+      futureDateAttendanceList.shift()
       setAttendanceData(futureDateAttendanceList)
     }
   }, [])
