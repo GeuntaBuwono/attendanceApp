@@ -102,10 +102,10 @@ const CardUpcomingSchedule = ({ date, location, onPress }: CardUpcomingScheduleI
           <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
             {`${dateFormatter({
               date: date,
-              format: 'HH:MM',
+              format: 'HH:mm',
             })} - ${dateFormatter({
               date: date,
-              format: 'HH:MM',
+              format: 'HH:mm',
             })}`}
           </Label>
           {isToday && (

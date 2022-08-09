@@ -1,7 +1,7 @@
 import * as dateFns from 'date-fns'
 
 type DateFormatType =
-  | 'HH:MM'
+  | 'HH:mm'
   | 'iiii, d MMM yyyy'
   | 'd MMM'
   | 'iiii'

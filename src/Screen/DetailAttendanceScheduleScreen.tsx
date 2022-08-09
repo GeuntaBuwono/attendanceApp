@@ -114,10 +114,10 @@ const DetailAttendanceScheduleScreen = () => {
           <Label restStyle={{ fontWeight: 'bold' }} color={Colors.darkGrey}>
             {`${dateFormatter({
               date: MOCK_SCHEDULE_DATA.schedule.start,
-              format: 'HH:MM',
+              format: 'HH:mm',
             })} - ${dateFormatter({
               date: MOCK_SCHEDULE_DATA.schedule.end,
-              format: 'HH:MM',
+              format: 'HH:mm',
             })}`}
           </Label>
         </View>
@@ -131,7 +131,7 @@ const DetailAttendanceScheduleScreen = () => {
             {MOCK_SCHEDULE_DATA.clock.in
               ? dateFormatter({
                   date: MOCK_SCHEDULE_DATA.clock.in,
-                  format: 'HH:MM',
+                  format: 'HH:mm',
                 })
               : ''}
           </Label>
@@ -146,7 +146,7 @@ const DetailAttendanceScheduleScreen = () => {
             {MOCK_SCHEDULE_DATA.clock.out
               ? dateFormatter({
                   date: MOCK_SCHEDULE_DATA.clock.out,
-                  format: 'HH:MM',
+                  format: 'HH:mm',
                 })
               : ''}
           </Label>

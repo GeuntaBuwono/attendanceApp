@@ -49,7 +49,7 @@ const HeroSection = () => (
     <Label sizeVariant="super" restStyle={{ fontWeight: 'bold', color: Colors.darkGrey }}>
       {dateFormatter({
         date: new Date(),
-        format: 'HH:MM',
+        format: 'HH:mm',
       })}
     </Label>
     <Label
@@ -112,10 +112,10 @@ const TodayScheduleSection = () => (
         <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
           {`${dateFormatter({
             date: new Date(),
-            format: 'HH:MM',
+            format: 'HH:mm',
           })} - ${dateFormatter({
             date: new Date(),
-            format: 'HH:MM',
+            format: 'HH:mm',
           })}`}
         </Label>
       </View>
@@ -194,10 +194,10 @@ const CardSchedule = ({ onPress }: { onPress: () => void }) => (
         <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
           {`${dateFormatter({
             date: new Date(),
-            format: 'HH:MM',
+            format: 'HH:mm',
           })} - ${dateFormatter({
             date: new Date(),
-            format: 'HH:MM',
+            format: 'HH:mm',
           })}`}
         </Label>
       </View>
