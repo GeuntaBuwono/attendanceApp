@@ -177,7 +177,7 @@ const AttendanceScheduleScreen = () => {
                 date={item.date}
                 onPress={() =>
                   navigation.push('DetailAttendanceSchedule', {
-                    id: 'id__DetailAttendanceSchedule__1',
+                    id: item.id,
                   })
                 }
               />
