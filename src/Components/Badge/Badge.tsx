@@ -18,17 +18,33 @@ const badgeSizeMapper: Record<BadgeSizeType, string> = {
 }
 
 const BadgeStyled = styled(View)<BadgeStyleInterface>`
-  background-color: ${(props) => badgeColorMapper[props.color]};
-  border-radius: 6px;
   padding: ${(props) => badgeSizeMapper[props.size ?? 'medium']};
+  ${(props) => {
+    if (props.variant === 'outline') {
+      return {
+        borderWidth: 1,
+        borderColor: badgeColorMapper[props.color],
+        borderRadius: 16,
+      }
+    } else {
+      return {
+        backgroundColor: badgeColorMapper[props.color],
+        borderRadius: 6,
+      }
+    }
+  }}
 `
 
 const Badge = (props: BadgeInterface) => {
-  const { label, color, size } = props
+  const { label, color, size, variant } = props
   return (
-    <BadgeStyled color={color} size={size}>
+    <BadgeStyled color={color} size={size} variant={variant}>
       <Label
-        restStyle={{ color: Colors.white, textAlign: 'center', fontWeight: 'bold' }}
+        restStyle={{
+          color: variant === 'outline' ? Colors.redPink : Colors.white,
+          textAlign: 'center',
+          fontWeight: variant === 'outline' ? '500' : 'bold',
+        }}
         sizeVariant="small"
       >
         {label}
