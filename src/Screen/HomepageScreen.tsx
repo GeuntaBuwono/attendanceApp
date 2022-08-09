@@ -183,50 +183,53 @@ const TodayScheduleSection = ({
 
 const CardSchedule = ({ onPress, data }: { onPress: () => void; data: AttendanceInterface }) => (
   <TouchableOpacity
-    onPress={onPress}
+    disabled={data.date && !data?.schedule?.start}
+    onPress={data.date && data?.schedule?.start && onPress}
     style={{ flex: 1, padding: 12, backgroundColor: Colors.paleGray, borderRadius: 12, width: 225 }}
   >
     <View>
-      {data?.schedule?.start && (
+      {data?.date && (
         <Label restStyle={{ fontWeight: '300' }} color={Colors.silver}>
           {dateFormatter({
-            date: data.schedule.start,
+            date: data.date,
             format: 'iiii',
           })}
         </Label>
       )}
-      {data?.schedule?.start && (
+      {data?.date && (
         <Label sizeVariant="large" restStyle={{ fontWeight: 'bold' }}>
           {dateFormatter({
-            date: data.schedule.start,
+            date: data?.date,
             format: 'd MMM',
           })}
         </Label>
       )}
     </View>
-    <View style={{ marginTop: 12 }}>
-      <Label numberOfLines={1}>{data?.store}</Label>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ marginRight: 8 }}>
-          <Icon name="clock" size={12} />
+    {data.date && data?.schedule?.start && (
+      <View style={{ marginTop: 12 }}>
+        <Label numberOfLines={1}>{data?.store}</Label>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ marginRight: 8 }}>
+            <Icon name="clock" size={12} />
+          </View>
+          <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
+            {`${
+              data?.schedule?.start &&
+              dateFormatter({
+                date: data.schedule.start,
+                format: 'HH:mm',
+              })
+            } - ${
+              data?.schedule?.end &&
+              dateFormatter({
+                date: data.schedule.end,
+                format: 'HH:mm',
+              })
+            }`}
+          </Label>
         </View>
-        <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
-          {`${
-            data?.schedule?.start &&
-            dateFormatter({
-              date: data.schedule.start,
-              format: 'HH:mm',
-            })
-          } - ${
-            data?.schedule?.end &&
-            dateFormatter({
-              date: data.schedule.end,
-              format: 'HH:mm',
-            })
-          }`}
-        </Label>
       </View>
-    </View>
+    )}
   </TouchableOpacity>
 )
 
