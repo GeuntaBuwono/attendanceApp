@@ -92,7 +92,9 @@ const CardUpcomingSchedule = ({ date, location, onPress }: CardUpcomingScheduleI
     <TouchableOpacity style={{ flexDirection: 'row' }} onPress={onPress}>
       <DateItem date={date} />
       <ContentItemStyled itemType="hasSchedule">
-        <Label restStyle={{ fontWeight: 'bold' }}>{location}</Label>
+        <Label numberOfLines={1} restStyle={{ fontWeight: 'bold' }}>
+          {location}
+        </Label>
         <View
           style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 4, marginTop: 12 }}
         >
