@@ -86,12 +86,12 @@ interface CardUpcomingScheduleInterface extends DateItemInterface {
   onPress: () => void
 }
 
-const CardUpcomingSchedule = ({ date, data, onPress }: CardUpcomingScheduleInterface) => {
-  const isToday = dateFns.isToday(new Date(date))
+const CardUpcomingSchedule = ({ data, onPress }: CardUpcomingScheduleInterface) => {
+  const isToday = data.schedule?.start && dateFns.isToday(new Date(data.schedule?.start))
 
   return (
     <TouchableOpacity style={{ flexDirection: 'row' }} onPress={onPress}>
-      <DateItem date={date} />
+      <DateItem date={data.date} />
       <ContentItemStyled itemType="hasSchedule">
         <Label numberOfLines={1} restStyle={{ fontWeight: 'bold' }}>
           {data.location}
@@ -102,15 +102,17 @@ const CardUpcomingSchedule = ({ date, data, onPress }: CardUpcomingScheduleInter
           <View style={{ marginRight: 8 }}>
             <Icon name="clock" size={12} />
           </View>
-          <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
-            {`${dateFormatter({
-              date: date,
-              format: 'HH:mm',
-            })} - ${dateFormatter({
-              date: date,
-              format: 'HH:mm',
-            })}`}
-          </Label>
+          {data.schedule?.start && data.schedule?.end && (
+            <Label sizeVariant="small" restStyle={{ fontWeight: '600', color: Colors.darkGrey }}>
+              {`${dateFormatter({
+                date: data.schedule?.start,
+                format: 'HH:mm',
+              })} - ${dateFormatter({
+                date: data.schedule?.end,
+                format: 'HH:mm',
+              })}`}
+            </Label>
+          )}
           {isToday && (
             <View style={{ marginLeft: 6 }}>
               <Badge label="TODAY" color="red" size="small" />
@@ -171,7 +173,7 @@ const AttendanceScheduleScreen = () => {
           data={attendanceData}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) =>
-            item.schedule?.start ? (
+            item.date && item.schedule?.start ? (
               <CardUpcomingSchedule
                 data={item}
                 date={item.date}
