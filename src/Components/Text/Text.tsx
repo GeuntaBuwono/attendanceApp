@@ -5,7 +5,7 @@ import Colors from 'Styles/colors'
 import { LabelInterface, LabelStyleInterface, TextVariantType } from './Text.type'
 
 const variantMapper: Record<TextVariantType, string> = {
-  small: '10px',
+  small: '12px',
   medium: '14px',
   large: '18px',
   'extra-large': '32px',
@@ -17,9 +17,20 @@ const TextStyled = styled(Text)<LabelStyleInterface>`
   font-size: ${(props) => variantMapper[props.sizeVariant ?? 'medium']};
 `
 
-const Label = ({ children, sizeVariant, restStyle, color = Colors.darkGrey }: LabelInterface) => {
+const Label = ({
+  children,
+  sizeVariant,
+  restStyle,
+  color = Colors.darkGrey,
+  numberOfLines,
+}: LabelInterface) => {
   return (
-    <TextStyled sizeVariant={sizeVariant} style={restStyle} color={color}>
+    <TextStyled
+      sizeVariant={sizeVariant}
+      style={restStyle}
+      color={color}
+      numberOfLines={numberOfLines}
+    >
       {children}
     </TextStyled>
   )

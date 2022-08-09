@@ -10,4 +10,5 @@ export interface LabelStyleInterface {
 
 export interface LabelInterface extends LabelStyleInterface {
   children: string
+  numberOfLines?: number
 }
