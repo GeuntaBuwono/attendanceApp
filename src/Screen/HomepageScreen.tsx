@@ -7,6 +7,7 @@ import Button from 'Components/Button/Button'
 import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
 import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
+import { BasicScreenLayout } from 'Layouts/BasicScreenLayout'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
 import { ReactNode, useEffect, useLayoutEffect, useState } from 'react'
 import { FlatList, Image, TouchableOpacity, View } from 'react-native'
@@ -318,7 +319,7 @@ const HomepageScreen = () => {
   }, [])
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.white }}>
+    <BasicScreenLayout>
       <HeroSection />
       <View style={{ flex: 2, marginHorizontal: 24 }}>
         {todaySchedule?.date && (
@@ -350,7 +351,7 @@ const HomepageScreen = () => {
           }}
         />
       </View>
-    </View>
+    </BasicScreenLayout>
   )
 }
 

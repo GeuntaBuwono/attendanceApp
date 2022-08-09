@@ -6,9 +6,10 @@ import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
 import * as dateFns from 'date-fns'
 import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
+import { BasicScreenLayout } from 'Layouts/BasicScreenLayout'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
 import React, { useLayoutEffect } from 'react'
-import { FlatList, SafeAreaView, TouchableOpacity, View } from 'react-native'
+import { FlatList, TouchableOpacity, View } from 'react-native'
 import styled from 'styled-components'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
@@ -151,7 +152,7 @@ const AttendanceScheduleScreen = () => {
   }, [])
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }}>
+    <BasicScreenLayout>
       <View
         testID="attendanceContainerTestId"
         style={{
@@ -189,7 +190,7 @@ const AttendanceScheduleScreen = () => {
           }
         />
       </View>
-    </SafeAreaView>
+    </BasicScreenLayout>
   )
 }
 

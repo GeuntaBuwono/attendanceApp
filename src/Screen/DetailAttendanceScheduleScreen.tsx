@@ -5,9 +5,10 @@ import Badge from 'Components/Badge/Badge'
 import { Icon } from 'Components/Icon/Icon'
 import Label from 'Components/Text/Text'
 import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
+import { BasicScreenLayout } from 'Layouts/BasicScreenLayout'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
 import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { Image, SafeAreaView, TouchableOpacity, View } from 'react-native'
+import { Image, TouchableOpacity, View } from 'react-native'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
 
@@ -64,7 +65,7 @@ const DetailAttendanceScheduleScreen = () => {
 
   if (detailAttendance) {
     return (
-      <SafeAreaView style={{ flex: 1, padding: 16, paddingTop: 20, backgroundColor: Colors.white }}>
+      <BasicScreenLayout padding={16}>
         <DetailSection title="Store">
           <View style={{ flexDirection: 'row' }}>
             <Image
@@ -143,7 +144,7 @@ const DetailAttendanceScheduleScreen = () => {
             </Label>
           </View>
         </DetailSection>
-      </SafeAreaView>
+      </BasicScreenLayout>
     )
   }
 
