@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Label Render Correctly 1`] = `
+<Text
+  className="sc-bczRLJ bLKfFM"
+  color="#2C2C2B"
+>
+  Label Test
+</Text>
+`;

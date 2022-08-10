@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Badge Render Correctly 1`] = `
+<View
+  className="sc-gsnTZi guFzVf"
+  color="red"
+>
+  <Text
+    className="sc-bczRLJ bKLDuK"
+    color="#2C2C2B"
+    sizeVariant="small"
+    style={
+      Object {
+        "color": "#FFF",
+        "fontWeight": "bold",
+        "textAlign": "center",
+      }
+    }
+  >
+    Badge Test
+  </Text>
+</View>
+`;
