@@ -38,3 +38,10 @@ jest.mock('react-native-mmkv-flipper-plugin', () => {
     initializeMMKVFlipper: jest.fn(),
   }
 })
+
+jest.mock('react-native-splash-screen', () => {
+  return {
+    hide: jest.fn(),
+    show: jest.fn(),
+  }
+})
