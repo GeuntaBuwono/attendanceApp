@@ -160,14 +160,13 @@ const AttendanceScheduleScreen = () => {
   }, [])
 
   return (
-    <BasicScreenLayout>
+    <BasicScreenLayout testID="attendanceContainerTestId">
       {isLoading ? (
         <View style={{ flex: 2, justifyContent: 'center' }}>
           <ActivityIndicator size="large" />
         </View>
       ) : (
         <View
-          testID="attendanceContainerTestId"
           style={{
             flex: 1,
           }}

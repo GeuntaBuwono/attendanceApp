@@ -10,7 +10,7 @@ import AttendanceScheduleScreen from 'Screen/AttendanceScheduleScreen'
 // Note: test renderer must be required after react-native.
 
 describe('AttendanceScheduleScreen', () => {
-  it('render AttendanceScheduleScreenScreen', async () => {
+  it('render AttendanceScheduleScreen', async () => {
     const { getByTestId } = render(<AttendanceScheduleScreen />)
     await waitFor(() => getByTestId('attendanceContainerTestId'))
   })
