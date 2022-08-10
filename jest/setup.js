@@ -32,3 +32,9 @@ jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper')
 jest.mock('@fortawesome/react-native-fontawesome', () => ({
   FontAwesomeIcon: '',
 }))
+
+jest.mock('react-native-mmkv-flipper-plugin', () => {
+  return {
+    initializeMMKVFlipper: jest.fn(),
+  }
+})

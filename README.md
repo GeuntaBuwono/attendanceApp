@@ -10,7 +10,6 @@
 - AppCenter Deployment for Demo Application
 - (Optional) e2e Testing with Detox
 
-## FIXME
+## How to Link Assets
 
-- [GitHub Issue](https://github.com/facebook/flipper/issues/1253) Got an warning on running jest testing `The native module for Flipper seems unavailable. Please verify that react-native-flipper is installed as yarn dependency to your project and, for iOS, that pod install is run in the ios directory.`
-  related to
+- [react-native-assets](https://www.npmjs.com/package/react-native-asset)
