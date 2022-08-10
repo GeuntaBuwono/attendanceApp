@@ -257,14 +257,9 @@ const NextScheduleSection = ({
     }}
   >
     <FlatList
-      getItemLayout={(_data, index) => ({
-        length: CARD_SCHEDULE_WIDTH,
-        offset: CARD_SCHEDULE_WIDTH * index,
-        index,
-      })}
       removeClippedSubviews
       initialNumToRender={2}
-      maxToRenderPerBatch={2}
+      maxToRenderPerBatch={6}
       data={data}
       horizontal
       renderItem={({ item }) => (
