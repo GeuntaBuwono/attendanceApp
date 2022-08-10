@@ -7,7 +7,7 @@ const { futureDateAttendanceList } = mockAttendanceDataBuilder()
 
 export const useAttendanceDataBuilder = () => {
   const [data, setData] = useMMKVObject<Array<AttendanceInterface>>('attendanceData')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const timeoutDataBuilder = setTimeout(() => {

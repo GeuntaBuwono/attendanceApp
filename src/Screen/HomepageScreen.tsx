@@ -342,8 +342,7 @@ const HomepageScreen = () => {
       setNextSchedule(fullAttendance)
     }
     buildNextScheduleList()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [attendanceData])
 
   useLayoutEffect(() => {
     navigation.setOptions({
