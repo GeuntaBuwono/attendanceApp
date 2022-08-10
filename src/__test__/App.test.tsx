@@ -5,7 +5,7 @@ import App from '../App'
 
 describe('App', () => {
   it('renders app stack', async () => {
-    const { getByText } = render(<App />)
-    await waitFor(() => getByText('Clock In'))
+    const { getByTestId } = render(<App />)
+    await waitFor(() => getByTestId('homepageScreenTestID'))
   })
 })

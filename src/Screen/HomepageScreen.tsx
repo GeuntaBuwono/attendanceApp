@@ -10,7 +10,7 @@ import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
 import { BasicScreenLayout } from 'Layouts/BasicScreenLayout'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
 import { memo, ReactNode, useEffect, useLayoutEffect, useState } from 'react'
-import { FlatList, Image, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, Image, TouchableOpacity, View } from 'react-native'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
 
@@ -41,6 +41,7 @@ const HeroSection = () => (
   <View
     style={{
       flex: 1,
+      maxHeight: 180,
       justifyContent: 'center',
       backgroundColor: Colors.yellow,
       alignItems: 'center',
@@ -97,13 +98,19 @@ const HomepageSection = ({
   </>
 )
 
-const TodayScheduleSection = ({ todaySchedule }: { todaySchedule: AttendanceInterface }) => (
+const TodayScheduleSection = ({
+  todaySchedule,
+  onPressRefresh,
+}: {
+  todaySchedule: AttendanceInterface
+  onPressRefresh: () => void
+}) => (
   <HomepageSection
     left={{
       label: "Today's Schedule",
     }}
     right={{
-      onPress: () => undefined,
+      onPress: onPressRefresh,
       label: 'Refresh',
     }}
   >
@@ -243,16 +250,18 @@ const ScheduleGapSeparator = () => <View style={{ marginRight: 24 }} />
 const NextScheduleSection = ({
   navigation,
   data,
+  onPressSeeAll,
 }: {
   navigation: NavigationLoginScreenProps
   data: Array<AttendanceInterface>
+  onPressSeeAll: () => void
 }) => (
   <HomepageSection
     left={{
       label: 'Next Schedule',
     }}
     right={{
-      onPress: () => navigation.push('AttendanceSchedule'),
+      onPress: onPressSeeAll,
       label: 'See all',
     }}
   >
@@ -280,13 +289,13 @@ const NextScheduleSection = ({
   </HomepageSection>
 )
 
+const MemorizeNextScheduleSection = memo(NextScheduleSection)
+
 const ButtonSection = ({
   data,
   onPress,
-  isUserNeedCheckIn,
 }: {
   data: AttendanceInterface
-  isUserNeedCheckIn: boolean
   onPress: {
     checkIn: () => void
     checkOut: () => void
@@ -300,17 +309,13 @@ const ButtonSection = ({
       }}
     >
       <View style={{ flex: 1, marginHorizontal: 12 }}>
-        <Button
-          onPress={onPress.checkIn}
-          label="Clock In"
-          isDisabled={isUserNeedCheckIn && !data.clock.in}
-        />
+        <Button onPress={onPress.checkIn} label="Clock In" isDisabled={!!data.clock.in} />
       </View>
       <View style={{ flex: 1, marginHorizontal: 12 }}>
         <Button
           onPress={onPress.checkOut}
           label="Clock Out"
-          isDisabled={!isUserNeedCheckIn && !data.clock.out}
+          isDisabled={!data.clock.in || !!data.clock.out}
         />
       </View>
     </View>
@@ -320,10 +325,15 @@ const ButtonSection = ({
 const HomepageScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
 
-  const [isUserNeedCheckIn, setIsUserNeedCheckIn] = useState(false)
   const [nextSchedule, setNextSchedule] = useState<Array<AttendanceInterface>>()
 
-  const { data: attendanceData, todaySchedule, setData } = useAttendanceDataBuilder()
+  const {
+    data: attendanceData,
+    todaySchedule,
+    setData,
+    isLoading,
+    setIsLoading,
+  } = useAttendanceDataBuilder()
 
   useEffect(() => {
     const buildNextScheduleList = () => {
@@ -345,10 +355,8 @@ const HomepageScreen = () => {
   }, [])
 
   const handlePressClockInOut = () => {
-    setIsUserNeedCheckIn(!isUserNeedCheckIn)
-
     if (todaySchedule) {
-      const updatedClockData: ClockInterface = !isUserNeedCheckIn
+      const updatedClockData: ClockInterface = !todaySchedule.clock.in
         ? {
             ...todaySchedule.clock,
             in: new Date(),
@@ -367,29 +375,55 @@ const HomepageScreen = () => {
   }
 
   return (
-    <BasicScreenLayout>
+    <BasicScreenLayout testID="homepageScreenTestID">
       <HeroSection />
-      <View style={{ flex: 2, marginHorizontal: 24 }} renderToHardwareTextureAndroid>
-        {todaySchedule?.date && <TodayScheduleSectionMemorize todaySchedule={todaySchedule} />}
-        {nextSchedule && <NextScheduleSection navigation={navigation} data={nextSchedule} />}
-      </View>
-      <View
-        style={{
-          marginBottom: 12,
-          marginHorizontal: 12,
-        }}
-      >
-        {todaySchedule && (
-          <ButtonSection
-            isUserNeedCheckIn={isUserNeedCheckIn}
-            data={todaySchedule}
-            onPress={{
-              checkIn: handlePressClockInOut,
-              checkOut: handlePressClockInOut,
+      {isLoading ? (
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : (
+        <>
+          <View style={{ flex: 2, marginHorizontal: 24 }} renderToHardwareTextureAndroid>
+            {todaySchedule?.date && (
+              <TodayScheduleSectionMemorize
+                onPressRefresh={() => {
+                  requestAnimationFrame(() => {
+                    setIsLoading(true)
+                  })
+                }}
+                todaySchedule={todaySchedule}
+              />
+            )}
+            {nextSchedule && (
+              <MemorizeNextScheduleSection
+                onPressSeeAll={() => {
+                  requestAnimationFrame(() => {
+                    navigation.push('AttendanceSchedule')
+                  })
+                }}
+                navigation={navigation}
+                data={nextSchedule}
+              />
+            )}
+          </View>
+          <View
+            style={{
+              marginBottom: 12,
+              marginHorizontal: 12,
             }}
-          />
-        )}
-      </View>
+          >
+            {todaySchedule && (
+              <ButtonSection
+                data={todaySchedule}
+                onPress={{
+                  checkIn: handlePressClockInOut,
+                  checkOut: handlePressClockInOut,
+                }}
+              />
+            )}
+          </View>
+        </>
+      )}
     </BasicScreenLayout>
   )
 }

@@ -1,4 +1,3 @@
-import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
 import RootStackNavigator from 'Navigators/RootStackNavigator'
 import React from 'react'
 import { MMKV } from 'react-native-mmkv'
@@ -9,9 +8,6 @@ if (__DEV__) {
   initializeMMKVFlipper({ default: storage })
 }
 
-const App = () => {
-  useAttendanceDataBuilder()
-  return <RootStackNavigator />
-}
+const App = () => <RootStackNavigator />
 
 export default App

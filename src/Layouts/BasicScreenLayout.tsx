@@ -5,11 +5,13 @@ import Colors from 'Styles/colors'
 export const BasicScreenLayout = ({
   children,
   padding,
+  testID,
 }: {
   children: React.ReactNode
   padding?: number
+  testID?: string
 }) => (
-  <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white, padding }}>
+  <SafeAreaView testID={testID} style={{ flex: 1, backgroundColor: Colors.white, padding }}>
     {children}
   </SafeAreaView>
 )

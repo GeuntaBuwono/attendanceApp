@@ -9,7 +9,7 @@ import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
 import { BasicScreenLayout } from 'Layouts/BasicScreenLayout'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
 import React, { useLayoutEffect } from 'react'
-import { FlatList, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native'
 import styled from 'styled-components'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
@@ -147,13 +147,13 @@ const ScheduleGapSeparator = () => <View style={{ marginBottom: 12 }} />
 const AttendanceScheduleScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
 
-  const { data: attendanceData } = useAttendanceDataBuilder()
+  const { data: attendanceData, setIsLoading, isLoading } = useAttendanceDataBuilder()
 
   useLayoutEffect(() => {
     navigation.setOptions({
       // TODO Add Refresh List
       // eslint-disable-next-line react/no-unstable-nested-components
-      headerRight: () => <HeaderRight onPress={() => undefined} />,
+      headerRight: () => <HeaderRight onPress={() => setIsLoading(true)} />,
       headerShadowVisible: false,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,53 +161,59 @@ const AttendanceScheduleScreen = () => {
 
   return (
     <BasicScreenLayout>
-      <View
-        testID="attendanceContainerTestId"
-        style={{
-          flex: 1,
-        }}
-      >
-        <View style={{ marginVertical: 16, paddingHorizontal: 16 }}>
-          <Label restStyle={{ fontWeight: 'bold' }} sizeVariant="large">
-            {dateFormatter({
-              date: new Date(),
-              format: 'MMMM yyyy',
-            })}
-          </Label>
+      {isLoading ? (
+        <View style={{ flex: 2, justifyContent: 'center' }}>
+          <ActivityIndicator size="large" />
         </View>
-        <FlatList
-          getItemLayout={(_data, index) => ({
-            length: CARD_SCHEDULE_HEIGHT,
-            offset: CARD_SCHEDULE_HEIGHT * index,
-            index,
-          })}
-          removeClippedSubviews
-          initialNumToRender={7}
-          maxToRenderPerBatch={7}
-          ListFooterComponent={ScheduleGapSeparator}
-          ItemSeparatorComponent={ScheduleGapSeparator}
-          style={{ paddingHorizontal: 16 }}
-          data={attendanceData}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) =>
-            item.date && item.schedule?.start ? (
-              <CardUpcomingSchedule
-                data={item}
-                date={item.date}
-                onPress={() => {
-                  requestAnimationFrame(() => {
-                    navigation.push('DetailAttendanceSchedule', {
-                      id: item.id,
+      ) : (
+        <View
+          testID="attendanceContainerTestId"
+          style={{
+            flex: 1,
+          }}
+        >
+          <View style={{ marginVertical: 16, paddingHorizontal: 16 }}>
+            <Label restStyle={{ fontWeight: 'bold' }} sizeVariant="large">
+              {dateFormatter({
+                date: new Date(),
+                format: 'MMMM yyyy',
+              })}
+            </Label>
+          </View>
+          <FlatList
+            getItemLayout={(_data, index) => ({
+              length: CARD_SCHEDULE_HEIGHT,
+              offset: CARD_SCHEDULE_HEIGHT * index,
+              index,
+            })}
+            removeClippedSubviews
+            initialNumToRender={7}
+            maxToRenderPerBatch={7}
+            ListFooterComponent={ScheduleGapSeparator}
+            ItemSeparatorComponent={ScheduleGapSeparator}
+            style={{ paddingHorizontal: 16 }}
+            data={attendanceData}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) =>
+              item.date && item.schedule?.start ? (
+                <CardUpcomingSchedule
+                  data={item}
+                  date={item.date}
+                  onPress={() => {
+                    requestAnimationFrame(() => {
+                      navigation.push('DetailAttendanceSchedule', {
+                        id: item.id,
+                      })
                     })
-                  })
-                }}
-              />
-            ) : (
-              <CardNoSchedule date={item.date} />
-            )
-          }
-        />
-      </View>
+                  }}
+                />
+              ) : (
+                <CardNoSchedule date={item.date} />
+              )
+            }
+          />
+        </View>
+      )}
     </BasicScreenLayout>
   )
 }
