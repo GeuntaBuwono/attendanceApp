@@ -2,6 +2,8 @@ import * as dateFns from 'date-fns'
 
 type DateFormatType =
   | 'HH:mm'
+  | 'HH'
+  | 'mm'
   | 'iiii, d MMM yyyy'
   | 'd MMM'
   | 'iiii'

@@ -37,7 +37,7 @@ const HeaderRight = () => (
   </TouchableOpacity>
 )
 
-const HeroSection = () => (
+const HeroSection = ({ date }: { date: Date }) => (
   <View
     style={{
       flex: 1,
@@ -61,12 +61,14 @@ const HeroSection = () => (
       restStyle={{ color: Colors.darkGrey, textAlign: 'center', fontWeight: '500' }}
     >
       {dateFormatter({
-        date: new Date(),
+        date,
         format: 'iiii, d MMM yyyy',
       })}
     </Label>
   </View>
 )
+
+const MemorizeHeroSection = memo(HeroSection)
 
 const HomepageSection = ({
   left,
@@ -325,7 +327,18 @@ const ButtonSection = ({
 const HomepageScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
 
+  const [date, setDate] = useState(new Date())
   const [nextSchedule, setNextSchedule] = useState<Array<AttendanceInterface>>()
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setDate(new Date())
+    }, 1000)
+
+    return function cleanup() {
+      clearInterval(timerId)
+    }
+  }, [])
 
   const {
     data: attendanceData,
@@ -375,7 +388,7 @@ const HomepageScreen = () => {
 
   return (
     <BasicScreenLayout testID="homepageScreenTestID">
-      <HeroSection />
+      <MemorizeHeroSection date={date} />
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <ActivityIndicator size="large" />
