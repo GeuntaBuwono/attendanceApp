@@ -9,7 +9,7 @@ import Label from 'Components/Text/Text'
 import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
 import { BasicScreenLayout } from 'Layouts/BasicScreenLayout'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
-import { ReactNode, useEffect, useLayoutEffect, useState } from 'react'
+import { memo, ReactNode, useEffect, useLayoutEffect, useState } from 'react'
 import { FlatList, Image, TouchableOpacity, View } from 'react-native'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
@@ -97,15 +97,7 @@ const HomepageSection = ({
   </>
 )
 
-const TodayScheduleSection = ({
-  todaySchedule,
-  clockInValue,
-  clockOutValue,
-}: {
-  todaySchedule: AttendanceInterface
-  clockInValue: Date | undefined
-  clockOutValue: Date | undefined
-}) => (
+const TodayScheduleSection = ({ todaySchedule }: { todaySchedule: AttendanceInterface }) => (
   <HomepageSection
     left={{
       label: "Today's Schedule",
@@ -154,10 +146,10 @@ const TodayScheduleSection = ({
           marginVertical: 4,
         }}
       >
-        <Label sizeVariant={clockInValue ? 'large' : 'extra-large'}>
-          {clockInValue
+        <Label sizeVariant={todaySchedule.clock.in ? 'large' : 'extra-large'}>
+          {todaySchedule.clock.in
             ? dateFormatter({
-                date: clockInValue,
+                date: todaySchedule.clock.in,
                 format: 'HH:mm',
               })
             : '--:--'}
@@ -171,10 +163,10 @@ const TodayScheduleSection = ({
             borderColor: Colors.silver,
           }}
         />
-        <Label sizeVariant={clockOutValue ? 'large' : 'extra-large'}>
-          {clockOutValue
+        <Label sizeVariant={todaySchedule.clock.out ? 'large' : 'extra-large'}>
+          {todaySchedule.clock.out
             ? dateFormatter({
-                date: clockOutValue,
+                date: todaySchedule.clock.out,
                 format: 'HH:mm',
               })
             : '--:--'}
@@ -183,6 +175,8 @@ const TodayScheduleSection = ({
     </View>
   </HomepageSection>
 )
+
+const TodayScheduleSectionMemorize = memo(TodayScheduleSection)
 
 const CARD_SCHEDULE_WIDTH = 225
 
@@ -292,41 +286,57 @@ const NextScheduleSection = ({
 )
 
 const ButtonSection = ({
-  isUserCheckedIn,
+  data,
   onPress,
+  isUserNeedCheckIn,
 }: {
-  isUserCheckedIn: boolean
+  data: AttendanceInterface
+  isUserNeedCheckIn: boolean
   onPress: {
     checkIn: () => void
     checkOut: () => void
   }
-}) => (
-  <View
-    style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-    }}
-  >
-    <View style={{ flex: 1, marginHorizontal: 12 }}>
-      <Button onPress={onPress.checkIn} label="Clock In" isDisabled={isUserCheckedIn} />
+}) => {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}
+    >
+      <View style={{ flex: 1, marginHorizontal: 12 }}>
+        <Button
+          onPress={onPress.checkIn}
+          label="Clock In"
+          isDisabled={isUserNeedCheckIn && !data.clock.in}
+        />
+      </View>
+      <View style={{ flex: 1, marginHorizontal: 12 }}>
+        <Button
+          onPress={onPress.checkOut}
+          label="Clock Out"
+          isDisabled={!isUserNeedCheckIn && !data.clock.out}
+        />
+      </View>
     </View>
-    <View style={{ flex: 1, marginHorizontal: 12 }}>
-      <Button onPress={onPress.checkOut} label="Clock Out" isDisabled={!isUserCheckedIn} />
-    </View>
-  </View>
-)
+  )
+}
 
 const HomepageScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
 
-  const [clockInValue, setClockInValue] = useState<Date>()
-  const [clockOutValue, setClockOutValue] = useState<Date>()
-  const [isUserCheckedIn, setIsUserCheckedIn] = useState(false)
+  const [isUserNeedCheckIn, setIsUserNeedCheckIn] = useState(false)
+  const [nextSchedule, setNextSchedule] = useState<Array<AttendanceInterface>>()
 
-  const { data: attendanceData, todaySchedule } = useAttendanceDataBuilder()
+  const { data: attendanceData, todaySchedule, setData } = useAttendanceDataBuilder()
 
   useEffect(() => {
-    attendanceData?.shift()
+    const buildNextScheduleList = () => {
+      const fullAttendance = attendanceData && [...attendanceData]
+      fullAttendance?.shift()
+      setNextSchedule(fullAttendance)
+    }
+    buildNextScheduleList()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -339,18 +349,34 @@ const HomepageScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const handlePressClockInOut = () => {
+    setIsUserNeedCheckIn(!isUserNeedCheckIn)
+
+    if (todaySchedule) {
+      const updatedClockData: ClockInterface = !isUserNeedCheckIn
+        ? {
+            ...todaySchedule.clock,
+            in: new Date(),
+          }
+        : {
+            ...todaySchedule.clock,
+            out: new Date(),
+          }
+
+      if (attendanceData) {
+        attendanceData[0].clock = updatedClockData
+
+        setData([...new Set(attendanceData)])
+      }
+    }
+  }
+
   return (
     <BasicScreenLayout>
       <HeroSection />
       <View style={{ flex: 2, marginHorizontal: 24 }} renderToHardwareTextureAndroid>
-        {todaySchedule?.date && (
-          <TodayScheduleSection
-            todaySchedule={todaySchedule}
-            clockInValue={clockInValue}
-            clockOutValue={clockOutValue}
-          />
-        )}
-        <NextScheduleSection navigation={navigation} data={attendanceData ?? []} />
+        {todaySchedule?.date && <TodayScheduleSectionMemorize todaySchedule={todaySchedule} />}
+        {nextSchedule && <NextScheduleSection navigation={navigation} data={nextSchedule} />}
       </View>
       <View
         style={{
@@ -358,19 +384,16 @@ const HomepageScreen = () => {
           marginHorizontal: 12,
         }}
       >
-        <ButtonSection
-          isUserCheckedIn={isUserCheckedIn}
-          onPress={{
-            checkIn: () => {
-              setIsUserCheckedIn(true)
-              setClockInValue(new Date())
-            },
-            checkOut: () => {
-              setClockOutValue(new Date())
-              setIsUserCheckedIn(false)
-            },
-          }}
-        />
+        {todaySchedule && (
+          <ButtonSection
+            isUserNeedCheckIn={isUserNeedCheckIn}
+            data={todaySchedule}
+            onPress={{
+              checkIn: handlePressClockInOut,
+              checkOut: handlePressClockInOut,
+            }}
+          />
+        )}
       </View>
     </BasicScreenLayout>
   )
