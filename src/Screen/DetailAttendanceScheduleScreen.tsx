@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Badge from 'Components/Badge/Badge'
 import { Icon } from 'Components/Icon/Icon'
@@ -7,7 +7,7 @@ import Label from 'Components/Text/Text'
 import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
 import { BasicScreenLayout } from 'Layouts/BasicScreenLayout'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect, useState } from 'react'
 import { Image, TouchableOpacity, View } from 'react-native'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
@@ -44,14 +44,13 @@ const DetailAttendanceScheduleScreen = () => {
 
   const { data: attendanceData } = useAttendanceDataBuilder()
 
-  useEffect(() => {
+  useFocusEffect(() => {
     const detailAttendanceData = attendanceData?.filter((data) => data.id === route.params.id)[0]
 
     if (!detailAttendance) {
       setDetailAttendance(detailAttendanceData)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  })
 
   useLayoutEffect(() => {
     detailAttendance?.schedule?.start &&

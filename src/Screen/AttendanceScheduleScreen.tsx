@@ -144,6 +144,31 @@ const CardNoSchedule = ({ date }: DateItemInterface) => (
 
 const ScheduleGapSeparator = () => <View style={{ marginBottom: 12 }} />
 
+const RenderAttendanceCard = ({
+  item,
+  navigation,
+}: {
+  item: AttendanceInterface
+  navigation: NavigationLoginScreenProps
+}) => {
+  const isHasSchedule = item.date && item.schedule?.start
+  return isHasSchedule ? (
+    <CardUpcomingSchedule
+      data={item}
+      date={item.date}
+      onPress={() => {
+        requestAnimationFrame(() => {
+          navigation.push('DetailAttendanceSchedule', {
+            id: item.id,
+          })
+        })
+      }}
+    />
+  ) : (
+    <CardNoSchedule date={item.date} />
+  )
+}
+
 const AttendanceScheduleScreen = () => {
   const navigation = useNavigation<NavigationLoginScreenProps>()
 
@@ -193,23 +218,7 @@ const AttendanceScheduleScreen = () => {
             style={{ paddingHorizontal: 16 }}
             data={attendanceData}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) =>
-              item.date && item.schedule?.start ? (
-                <CardUpcomingSchedule
-                  data={item}
-                  date={item.date}
-                  onPress={() => {
-                    requestAnimationFrame(() => {
-                      navigation.push('DetailAttendanceSchedule', {
-                        id: item.id,
-                      })
-                    })
-                  }}
-                />
-              ) : (
-                <CardNoSchedule date={item.date} />
-              )
-            }
+            renderItem={({ item }) => <RenderAttendanceCard item={item} navigation={navigation} />}
           />
         </View>
       )}

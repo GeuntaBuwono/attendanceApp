@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import { faker } from '@faker-js/faker'
-import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import Badge from 'Components/Badge/Badge'
 import Button from 'Components/Button/Button'
@@ -9,7 +9,7 @@ import Label from 'Components/Text/Text'
 import { useAttendanceDataBuilder } from 'Hooks/useAttendanceDataBuilder'
 import { BasicScreenLayout } from 'Layouts/BasicScreenLayout'
 import { RootStackParamList } from 'Navigators/RootStackNavigator'
-import { memo, ReactNode, useEffect, useLayoutEffect, useState } from 'react'
+import { memo, ReactNode, useLayoutEffect, useState } from 'react'
 import { ActivityIndicator, FlatList, Image, TouchableOpacity, View } from 'react-native'
 import Colors from 'Styles/colors'
 import { dateFormatter } from 'Utils/dateFormatter'
@@ -330,7 +330,7 @@ const HomepageScreen = () => {
   const [date, setDate] = useState(new Date())
   const [nextSchedule, setNextSchedule] = useState<Array<AttendanceInterface>>()
 
-  useEffect(() => {
+  useFocusEffect(() => {
     const timerId = setInterval(() => {
       setDate(new Date())
     }, 1000)
@@ -338,7 +338,7 @@ const HomepageScreen = () => {
     return function cleanup() {
       clearInterval(timerId)
     }
-  }, [])
+  })
 
   const {
     data: attendanceData,
@@ -348,14 +348,14 @@ const HomepageScreen = () => {
     setIsLoading,
   } = useAttendanceDataBuilder()
 
-  useEffect(() => {
+  useFocusEffect(() => {
     const buildNextScheduleList = () => {
       const fullAttendance = attendanceData && [...attendanceData]
       fullAttendance?.shift()
       setNextSchedule(fullAttendance)
     }
     buildNextScheduleList()
-  }, [attendanceData])
+  })
 
   useLayoutEffect(() => {
     navigation.setOptions({
